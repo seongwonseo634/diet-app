@@ -1,0 +1,15 @@
+{
+  "name": "다이어트 관리",
+  "short_name": "다이어트",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#16a34a",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "icon-diet.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
