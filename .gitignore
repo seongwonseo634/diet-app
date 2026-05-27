@@ -1,0 +1,8 @@
+# Node, Build, and Secrets
+node_modules/
+dist/
+.env
+*.json
+# 특히 아래의 키 파일 이름은 프로젝트에 따라 다르니, 
+# 본인의 JSON 키 파일 이름으로 구체적으로 적어주세요.
+my-diet-roadmap.json

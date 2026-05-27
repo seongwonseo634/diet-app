@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<head>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-diet.png">
+<link rel="apple-touch-icon" href="icon-diet.png">
+<meta name="theme-color" content="#16a34a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+  <style>
+    :root {
+      --bg: #e0e5ec;
+      --shadow-light: #ffffff;
+      --shadow-dark: #a3b1c6;
+      --accent: #007AFF;
+      --text: #31344b;
+      --card-line: linear-gradient(90deg, #007AFF, #00C6FF);
+      --neu-inset: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+    }
+    body.dark {
+      --bg: #2d3436;
+      --shadow-light: #3d4648;
+      --shadow-dark: #15191a;
+      --accent: #00d2ff;
+      --text: #ffffff;
+      --card-line: linear-gradient(90deg, #00d2ff, #3a7bd5);
+      --neu-inset: inset 5px 5px 10px #15191a, inset -5px -5px 10px #3d4648;
+    }
+    body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; transition: all 0.3s ease; }
+    .container { width: 100%; max-width: 480px; }
+
+    /* 테마 버튼 (다크/라이트 색상 반전 적용) */
+    .mode-switch { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; width: 100%; }
+    .mode-btn { padding: 12px; border-radius: 15px; border: none; font-weight: bold; background: var(--bg); color: var(--text); box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); cursor: pointer; font-size: 13px; flex: 1; }
+    body:not(.dark) #dBtn { background: #2d3436; color: white; }
+    body.dark #lBtn { background: #ffffff; color: #2d3436; }
+    .mode-btn.active { color: var(--accent); box-shadow: var(--neu-inset); }
+
+    /* Hello 카드 (Blue Gradient) */
+    .header-card {
+      background: linear-gradient(135deg, #007AFF, #00C6FF);
+      color: white; border-radius: 25px; padding: 25px 20px;
+      margin-bottom: 25px; box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
+      text-align: center; width: 100%; box-sizing: border-box;
+    }
+    .header-card .top-tag { font-size: 13px; font-weight: bold; opacity: 0.9; margin-bottom: 10px; letter-spacing: 1px; }
+    .header-card .main-greet { font-size: 26px; font-weight: 800; margin: 0; margin-bottom: 15px; }
+    .header-card .bottom-summary { font-size: 15px; font-weight: 500; }
+
+    .card { background: var(--bg); border-radius: 20px; padding: 20px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); margin-bottom: 25px; position: relative; overflow: hidden; width: 100%; box-sizing: border-box; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: var(--card-line); }
+
+    .section-title { background: var(--accent); color: white; border-radius: 12px; padding: 12px; font-weight: bold; margin-bottom: 20px; text-align: center; box-shadow: 3px 3px 8px rgba(0,0,0,0.15); }
+
+    /* 입력창 및 Placeholder */
+    .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+    .input-group { text-align: left; }
+    .label { font-size: 11px; margin-bottom: 5px; display: block; font-weight: bold; opacity: 0.8; }
+    .neu-input { width: 100%; border: none; border-radius: 12px; padding: 12px; background: var(--bg); color: var(--text); box-shadow: var(--neu-inset); box-sizing: border-box; font-size: 14px; outline: none; }
+
+    .neu-btn { width: 100%; padding: 16px; border: none; border-radius: 18px; background: var(--bg); color: var(--accent); font-weight: bold; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); cursor: pointer; margin-bottom: 12px; transition: 0.2s; font-size: 15px; }
+    .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+    .neu-btn.active { color: #ff5252; }
+
+    .toggle-section { max-height: 0; overflow: hidden; transition: 0.5s ease-in-out; }
+    .toggle-section.show { max-height: 2000px; padding: 5px 0; }
+
+    .food-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 15px; margin-bottom: 10px; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); font-size: 14px; }
+    .cancel-btn { color: #ff5252; cursor: pointer; font-size: 11px; font-weight: bold; padding: 6px 10px; border-radius: 10px; border: 1px solid #ff5252; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+    th, td { padding: 12px; border: 1px solid var(--shadow-dark); text-align: center; }
+.header-card {
+  position: relative;
+  overflow: hidden;
+}
+/* 러너 */
+.runner {
+  position: absolute;
+  bottom: 10px;
+  font-size: 28px;
+  width: 40px;
+}
+/* 방향 분리 */
+.runner span {
+  display: inline-block;
+}
+/* 왼쪽 → 오른쪽 */
+.runner.left {
+  left: 0;
+  animation: moveRight 12s linear infinite; /* ⭐ 속도 업 */
+}
+/* 오른쪽 → 왼쪽 */
+.runner.right {
+  right: 0;
+  animation: moveLeft 12s linear infinite;
+}
+/* ⭐ 핵심 수정 */
+@keyframes moveRight {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(100% + 300px)); }
+}
+@keyframes moveLeft {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% - 300px)); }
+}
+/* 방향 */
+.runner.left span {
+  transform: scaleX(-1);
+}
+.runner.right span {
+  transform: scaleX(1);
+}
+/* 분석 버튼 */
+.analyze-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #6C63FF, #5A54E0);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+.analyze-btn:hover {
+  transform: translateY(-2px);
+}  
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="mode-switch">
+    <button id="lBtn" class="mode-btn active" onclick="changeMode('light')">기본모드 ☀️</button>
+    <button id="dBtn" class="mode-btn" onclick="changeMode('dark')">다크모드 🌙</button>
+  </div>
+
+  <div class="header-card">
+    <div class="top-tag">MY DIET PLAN</div>
+    <div class="runner left"><span>🏃‍♂️</span></div>
+    <div class="runner right"><span>🏃‍♂️</span></div>
+    <h1 class="main-greet">목표 달성까지 계속 함께합니다! 🍎</h1>
+    <div id="hello-summary" class="bottom-summary">나의 정보를 입력해주세요.</div>
+  </div>
+
+  <div class="card" style="padding: 15px;">
+    <label class="label">입력 날짜 선택</label>
+    <input type="date" id="uiDate" class="neu-input">
+  </div>
+
+  <div class="section-title">총대사량 산출</div>
+
+  <div class="card">
+    <div class="input-grid">
+      <div class="input-group"><label class="label">키(cm)</label><input type="number" id="h" class="neu-input" placeholder="예: 170" onchange="runTDEE()"></div>
+      <div class="input-group"><label class="label">현재체중(Kg)</label><input type="number" id="w" class="neu-input" placeholder="예: 100" onchange="runTDEE()"></div>
+      <div class="input-group"><label class="label">나이(세)</label><input type="number" id="a" class="neu-input" placeholder="예: 40" onchange="runTDEE()"></div>
+    </div>
+    <div class="input-grid" style="grid-template-columns: 2fr 1fr;">
+      <div class="input-group">
+        <label class="label">활동수준</label>
+        <select id="lvl" class="neu-input" onchange="runTDEE()">
+          <option value="1">거의 없음 (앉아서 생활)</option>
+          <option value="2">가벼운 활동 (주 1~3회)</option>
+          <option value="3">가벼운 활동 (주 3~5회)</option>
+          <option value="4">중고강도활동 (주 1~3회)</option>
+          <option value="5">중고강도활동 (주 4~5회)</option>
+          <option value="6">고강도활동 (주 1~3회)</option>
+          <option value="7">고강도활동 (주 4~5회)</option>
+        </select>
+      </div>
+      <div class="input-group"><label class="label">운동시간(분)</label><input type="number" id="exMin" class="neu-input" placeholder="예: 120" onchange="runTDEE()"></div>
+    </div>
+  </div>
+
+  <button id="tdeeBtn" class="neu-btn" onclick="toggleTDEE()">총대사량 산출 보기 📊</button>
+  <div id="tdeeSec" class="toggle-section"><div class="card"><div id="tdeeRes" style="font-size:14px; line-height:2; text-align:left;"></div></div></div>
+
+  <div class="card">
+    <div class="section-title" style="background:#34C759;">하루 섭취 칼로리</div>
+    <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="input-group"><label class="label">음식항목 선택</label><select id="cat" class="neu-input" onchange="onCatSelect()"><option value="">선택</option></select></div>
+      <div class="input-group"><label class="label">음식명</label><select id="food" class="neu-input" onchange="onFoodAdd()"><option value="">선택</option></select></div>
+    </div>
+    <div id="foodList"></div>
+    <div style="text-align:right; font-weight:bold; margin-top:15px; color:var(--accent);">총 섭취: <span id="sumKcal">0</span> kcal</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title" style="background:#FF9500;">감량 목표 설정</div>
+    <div class="input-grid" style="grid-template-columns: 1fr 1.2fr; align-items: end;">
+      <div class="input-group"><label class="label">목표 체중(Kg)</label><input type="number" id="tw" class="neu-input" placeholder="예: 60" oninput="updateStatus()"></div>
+      <div class="input-group"><label class="label">현재 칼로리 상태(총활동대사량 - 섭취칼로리)</label><input type="number" id="calStatus" class="neu-input" readonly style="color:var(--accent); font-weight:bold;"></div>
+    </div>
+    <div id="goalSum" style="font-size:14px; line-height:2; text-align:left; margin-top:15px;"></div>
+  </div>
+
+  <button id="mapBtn" class="neu-btn" onclick="toggleMap()">나의 감량 로드맵 산출 보기 🗺️</button>
+  <div style="font-size:11px; margin-bottom:20px; opacity:0.8; text-align:center;">위 버튼을 클릭하면 실시간 로드맵이 생성됩니다.</div>
+  <div id="mapSec" class="toggle-section"><div class="card" id="mapRes"></div></div>
+
+</div>
+
+<script>
+let fullDb = {}; let selected = []; let tdeeVal = 0;
+
+window.onload = () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  changeMode(savedTheme);
+  document.getElementById('uiDate').valueAsDate = new Date();
+  google.script.run.withSuccessHandler(res => {
+    fullDb = res.db;
+    const catSel = document.getElementById('cat');
+    res.categories.forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.innerText = c; catSel.appendChild(opt); });
+  }).getFoodDataFromSheet();
+};
+
+function changeMode(mode) {
+  const b = document.body; const l = document.getElementById('lBtn'); const d = document.getElementById('dBtn');
+  if(mode === 'dark') { b.classList.add('dark'); d.classList.add('active'); l.classList.remove('active'); localStorage.setItem('theme', 'dark'); }
+  else { b.classList.remove('dark'); l.classList.add('active'); d.classList.remove('active'); localStorage.setItem('theme', 'light'); }
+}
+
+function toggleTDEE() {
+  const s = document.getElementById('tdeeSec'); const b = document.getElementById('tdeeBtn');
+  s.classList.toggle('show');
+  if(s.classList.contains('show')) { b.innerText = "총대사량 산출 닫기 ✖️"; b.classList.add('active'); runTDEE(); }
+  else { b.innerText = "총대사량 산출 보기 📊"; b.classList.remove('active'); }
+}
+
+function runTDEE() {
+  const p = { height: document.getElementById('h').value, weight: document.getElementById('w').value, age: document.getElementById('a').value, activityLevel: document.getElementById('lvl').value, exerciseTime: document.getElementById('exMin').value || 0 };
+  if(!p.height || !p.weight) return;
+  google.script.run.withSuccessHandler(res => {
+    tdeeVal = res.tdee;
+    document.getElementById('tdeeRes').innerHTML = `1. BMI: <b style="color:${res.bmiColor}">${res.bmi} (${res.bmiStatus})</b><br>2. 기초대사량: <b>${res.bmr}</b> kcal<br>3. 일상활동대사량: <b>400</b> kcal(음식조리, 먹고, 독서, TV보기 등)<br>4. 활동대사량: <b>${res.activityCal}</b> kcal<br>5. 총활동대사량: <b style="color:var(--accent); font-size:18px;">${res.tdee} kcal</b>`;
+    updateStatus();
+  }).calculateMetrics(p);
+}
+
+function onCatSelect() {
+  const c = document.getElementById('cat').value; const f = document.getElementById('food');
+  f.innerHTML = '<option value="">선택</option>';
+  if(fullDb[c]) Object.keys(fullDb[c]).forEach(k => { let opt = document.createElement('option'); opt.value = k; opt.innerText = `${k} (${fullDb[c][k]}kcal)`; f.appendChild(opt); });
+}
+
+function onFoodAdd() {
+  const c = document.getElementById('cat').value; const n = document.getElementById('food').value;
+  if(!n) return; selected.push({ name: n, kcal: fullDb[c][n], qty: 1 }); drawFoods();
+}
+
+function drawFoods() {
+  const box = document.getElementById('foodList'); box.innerHTML = ""; let total = 0;
+  selected.forEach((it, i) => {
+    total += it.kcal * it.qty;
+    box.innerHTML += `<div class="food-row"><b>${it.name}</b><div style="display:flex; align-items:center;"><span style="font-size:10px; margin-right:5px;">가중치</span><input type="number" class="neu-input" style="width:50px; padding:6px; margin:0; text-align:center;" value="${it.qty}" step="0.1" onchange="editQty(${i}, this.value)"><span>배</span><span class="cancel-btn" style="margin-left:10px;" onclick="removeIdx(${i})">취소(X)</span></div></div>`;
+  });
+  document.getElementById('sumKcal').innerText = Math.round(total);
+  updateStatus();
+}
+
+function editQty(i, v) { selected[i].qty = parseFloat(v) || 0; drawFoods(); }
+function removeIdx(i) { selected.splice(i, 1); drawFoods(); }
+
+function updateStatus() {
+  const intake = parseFloat(document.getElementById('sumKcal').innerText) || 0;
+  const diff = tdeeVal - intake;
+  document.getElementById('calStatus').value = Math.round(diff);
+  const tw = document.getElementById('tw').value; const cw = document.getElementById('w').value;
+  if(tw && cw && parseFloat(cw) > parseFloat(tw)) {
+    const lose = (cw - tw).toFixed(1);
+    // 오차 없는 소요일수 계산
+    const d = diff > 0 ? Math.round((lose * 7700) / diff) : 0;
+    document.getElementById('goalSum').innerHTML = `감량 목표: <b style="color:#e74c3c">${lose}kg</b><br>일일 소모 차이: <b>${Math.round(diff)}kcal</b><br>예상 달성 일수: <b style="color:#2ecc71">${d}일</b>`;
+    document.getElementById('hello-summary').innerText = `나의감량목표:${lose}kg, 예상소요일수:${d}일 🔥`;
+  }
+}
+
+function toggleMap() {
+  const s = document.getElementById('mapSec'); const b = document.getElementById('mapBtn');
+  s.classList.toggle('show');
+  if(s.classList.contains('show')) { b.innerText = "나의 감량 로드맵 산출 닫기 ✖️"; b.classList.add('active'); runMap(); }
+  else { b.innerText = "나의 감량 로드맵 산출 보기 🗺️"; b.classList.remove('active'); }
+}
+
+function runMap() {
+  const cw = document.getElementById('w').value; const gw = document.getElementById('tw').value; const st = document.getElementById('calStatus').value;
+  if(!cw || !gw || st <= 0) return document.getElementById('mapRes').innerText = "칼로리 차이를 플러스(+)로 만드세요.";
+  document.getElementById('mapRes').innerText = "로드맵 계산 중...";
+  google.script.run.withSuccessHandler(res => {
+    let h = `<b>로드맵 (총 예상: ${res.totalDays})</b><table><tr><th>목표</th><th>기간</th><th>누적</th></tr>`;
+    res.list.forEach(r => { h += `<tr><td>${r.target}</td><td>${r.period}</td><td>${r.cumulative}</td></tr>`; });
+    document.getElementById('mapRes').innerHTML = h + "</table>";
+  }).getRoadmap(cw, gw, st);
+}
+</script>
+</body>
+</html>
